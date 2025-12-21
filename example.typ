@@ -1,10 +1,10 @@
 #import "template.typ": *
 
-#let title = "Real and Complex Analysis"
-#let author = "Walter Rudin"
-#let professor = "Ming Li"
+#let title = "Bayesian Machine Learning"
+#let author = "Mathias Markvardsen"
+#let professor = "xxxxxx"
 #let creater = "Beitian Ma"
-#let time = "Spring 2023"
+#let time = "Spring 2025"
 #let abstract = lorem(60)
 
 #show: note_page.with(title, author, professor, creater, time, abstract)
@@ -24,7 +24,9 @@
 
 #lorem(60)
 
-#definition[#lorem(60)]
+#definition[
+  This is a test to see how defition works. And to be fair it works just fine.
+]
 
 #lorem(60)
 
@@ -32,15 +34,21 @@ $ cal(A) := { x in RR | x "is natural" } $
 
 #lorem(10)
 
-#theorem[#lorem(50)]
+#theorem[
+
+  This is the a test to see hwo theorems work. And to be fair it works just fine.
+
+  $ sum_(i=0)^(n) 1 / 2^i <= 2n $
+]
 
 #lorem(30)
 
 #corollary[
   #lorem(20)
-  $ sum_(k=0)^n k
-    &= 1 + ... + n \
-    &= (n(n+1)) / 2 $
+  $
+    sum_(k=0)^n k & = 1 + ... + n \
+                  & = (n(n+1)) / 2
+  $
   #lorem(20)
 ]
 
@@ -64,8 +72,10 @@ $ cal(A) := { x in RR | x "is natural" } $
 = Positive Borel Measures
 #lemma[
   #lorem(70)
-  $ vec(a, b, c) dot vec(1, 2, 3)
-    = a + 2b + 3c $
+  $
+    vec(a, b, c) dot vec(1, 2, 3)
+    = a + 2b + 3c
+  $
 ]
 
 #lorem(40)
@@ -78,3 +88,5 @@ This is an example where you can easily reference and jump to a block of a defin
 which is consistent with the pattern in #refto("Figure 1.1.1").
 
 #notefig("images//plot2.svg", width: 40%)
+
+
