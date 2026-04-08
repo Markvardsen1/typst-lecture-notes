@@ -292,5 +292,4 @@ Below is an attached table that demonstrates how to characterize the model based
 #image("images/Golden_table.png", width: 100%)
 
 Notice an important skill for analysis of ARIMA processes. First of all, almost all the processes can be restated by the backwards operator $bold(B)$.
-
-$ bold(op("VAR")) $
+cdsnjcd 

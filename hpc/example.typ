@@ -1,4 +1,4 @@
-#import "../base/template.typ": *
+#import "template.typ": *
 
 #let title = "Bayesian Machine Learning"
 #let author = "Mathias Markvardsen"
