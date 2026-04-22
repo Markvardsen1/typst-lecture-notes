@@ -294,3 +294,176 @@ Below is an attached table that demonstrates how to characterize the model based
 Notice an important skill for analysis of ARIMA processes. First of all, almost all the processes can be restated by the backwards operator $bold(B)$.
 
 $ bold(op("VAR")) $
+
+== Week 9 : State Space Models and Kalman Filter
+
+#image("images/2026-04-10_08-34-23.png", width: 60%)
+in directed graph at least a simple kalman filter can be shown as a Hidden Markow Model (HMM) where the state variable is the hidden variable and the observed variable is the observed variable. The state space model is a generalization of the HMM where the state variable can be continuous and the observed variable can also be continuous. The state space model is given by:
+
+The whole point is that a latent variable $X_t$ depends on the previous latent variable $X_(t-1)$ and some noise $w_t$ and the observed variable $Y_t$ depends on the latent variable $X_t$ and some noise $v_t$.
+
+Goal is to reconstruct and predict the state (latent variables) of the systems based on the observed varables.
+
+#image("images/2026-04-10_08-39-27.png", width: 60%)
+
+=== Determining the model structure
+
+- The system model  is often based on physical considerations; start by formulating the model using differential equations.
+- Rewrite m'th order differential equations as a system of first order equations.
+- Find the discrete time model for a particular time step by formulatign the 1-step predictions.
+- if the resulting model is linear,
+  - Add noise to appropiate states
+  - Formulate observation equations.
+
+
+==== Example:
+$
+  dif x / dif t = a x
+  implies
+  X_t = X_0 e^(a t)
+  X(t+ delta t) = X_0 * e^(a (t + delta t)) = X_0 e^(a t) e^(a delta t) = X(t) e^(a delta t)
+$
+
+In discrete time
+
+$
+  X_(t+1) = A X_t
+$
+
+where,
+
+$
+  A = e^(a delta t)
+$
+
+==== Example - a falling body
+
+$
+  x'' = a x' + b x + c
+  y = x'
+$
+so,
+
+$
+  cases(
+    x' = y,
+    y' = a y + b x + c
+  )
+$
+
+In matrix form:
+
+$
+  vec(x', y') = mat(0, 1; -b, a) vec(x, y) + vec(0, -c)
+$
+
+What we just did was to rewrtite the second order differential equation as a system of first order equations. We can then discretize the system by using the 1-step prediction to get the discrete time model. Finally, we can add noise to the system and formulate the observation equations to get the state space model.
+
+$
+  X_t = -1/2 * g * (t - delta t)^2 + v_0 * (t - delta t) + x_0
+  y_t = -g * (t - delta t) + v_0
+  t = k T
+  delta t = (k - 1) T
+$
+$
+  implies
+  cases(
+    X_(k T) = -1/2 * g * ((k - 1) T)^2 + v_0 * ((k - 1) T) + x_0,
+    y_(k T) = -g * ((k - 1) T) + v_0
+  )
+$
+
+in vector form:
+
+$
+  vec(x y)_k = mat(1, 1; 0, 1) vec(x y)_(k-1) + vec(-11/2, -1) g
+$
+$
+  y_k = vec(0, 1)^T vec(x y)_k + epsilon_k
+$
+
+
+#image("images/2026-04-10_08-57-07.png", width: 95%)
+
+Given measurements of the position at time points 1, 2, . . . , k we could:
+▶ Predict the future position and velocity x k +n|k (n > 0).
+▶ Reconstruct the current position and velocity from noisy measurements x k |k .
+▶ Smooth to find the best estimate of the position and velocity at a previous time point x k +n|k
+(n < 0) (estimate the path in the state space).
+
+We do this with the Kalman filter.
+Before that remember what *linear projection* is.
+
+Consider 2 random vectors *Y* and *X*, then:
+
+$ op("E")[vec(Y, X)] = vec(mu_y, mu_x) $
+
+and
+
+$
+  op("Var")[vec(Y, X)] = mat(
+    Sigma_(YY), Sigma_(YX);
+    Sigma_(XY), Sigma_(XX)
+  )
+$
+
+Define the linear projection:
+
+$
+  rho_X(Y) = mu_y + Sigma_(YX) Sigma_(XX)^(-1) (X - mu_x)
+$
+Then,
+
+- $rho_X(Y)$ is of the form $a + BX$
+- $op("Var")[Y - rho_X(Y)] = Sigma_(YY) - Sigma_(YX) Sigma_(XX)^(-1) Sigma_(XY)$
+- $op("Cov")(Y - rho_X(Y), X) = 0$
+
+
+
+
+
+
+
+
+The Systems Eqations for a state space model are given by:
+#definition[
+  State equation:
+  $
+    bold(x)_(t+1) = bold(A) bold(x)_t + bold(B) bold(u)_t + bold(w)_t
+  $
+
+  Measurement equation:
+  $
+    bold(y)_t = bold(C) bold(x)_t + bold(D) bold(u)_t + bold(v)_t
+  $
+]
+
+or in matrix expanded matrix form:
+
+$
+  bold(X)_t = mat(
+    -phi_1, 1, 0, dots, 0;
+    -phi_2, 0, 1, dots, 0;
+    dots.v, , dots.v, , dots.v;
+    -phi_(n-1), 0, 0, dots, 1;
+    -phi_n, 0, 0, dots, 0
+  ) bold(X)_(t-1) + vec(1, theta_1, theta_2, dots, theta_(n-1)) epsilon_t
+$
+
+=== Random walk with measurement noise
+consider the state space model given by:
+
+$
+  X_(t+1) = X_t + eta_t
+  Y_t = X_t + epsilon_t
+$
+
+where $eta_t$ and $epsilon_t$ are independent white noise processes with variances $sigma^2_eta$ and $sigma^2_epsilon$ respectively. This model is known as a random walk with measurement noise. The state equation describes the evolution of the state variable $X_t$ over time, while the measurement equation describes how the observed variable $Y_t$ is related to the state variable.
+
+$X_t$ is a random walk, that is not observed directly, but instead we observe $Y_t$ which is the state variable plus some measurement noise. The Kalman filter can be used to estimate the state variable $X_t$ based on the observed variable $Y_t$ and the parameters of the model. The Kalman filter provides a recursive algorithm for estimating the state variable at each time step, taking into account the uncertainty in the measurements and the evolution of the state variable over time.
+
+$diff Y_t = Y_t - Y_(t-1) = (X_t + epsilon_t) - (X_(t-1) + epsilon_(t-1)) = (X_t - X_(t-1)) + (epsilon_t - epsilon_(t-1)) = eta_(t-1) + (epsilon_t - epsilon_(t-1))$
+
+So what exactly defines the last equation? It can be considered as an ARIMA(0, 1, 1) this means we can use tools similar to previous weeks to analyze the model.
+
+a
